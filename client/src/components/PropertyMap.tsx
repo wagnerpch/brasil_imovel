@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { GoogleMap, Marker } from "@react-google-maps/api";
 import type { Property } from "@shared/schema";
 
@@ -11,6 +11,23 @@ interface PropertyMapProps {
 
 const defaultCenter = { lat: -23.5505, lng: -46.6333 }; // São Paulo
 
+const loadGoogleMapsScript = () => {
+  return new Promise<void>((resolve, reject) => {
+    if (window.google) {
+      resolve();
+      return;
+    }
+
+    const script = document.createElement("script");
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY}`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => resolve();
+    script.onerror = () => reject(new Error("Failed to load Google Maps script"));
+    document.head.appendChild(script);
+  });
+};
+
 export function PropertyMap({
   properties,
   onPropertySelect,
@@ -18,6 +35,24 @@ export function PropertyMap({
   zoom = 12
 }: PropertyMapProps) {
   const [map, setMap] = useState<google.maps.Map | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+      setError("Google Maps API key não configurada");
+      setIsLoading(false);
+      return;
+    }
+
+    loadGoogleMapsScript()
+      .then(() => setIsLoading(false))
+      .catch((err) => {
+        console.error("Erro ao carregar Google Maps:", err);
+        setError("Erro ao carregar o Google Maps");
+        setIsLoading(false);
+      });
+  }, []);
 
   const onLoad = useCallback((map: google.maps.Map) => {
     setMap(map);
@@ -27,10 +62,18 @@ export function PropertyMap({
     setMap(null);
   }, []);
 
-  if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+  if (isLoading) {
     return (
       <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
-        <p>Google Maps API key não configurada</p>
+        <p>Carregando mapa...</p>
+      </div>
+    );
+  }
+
+  if (error || !import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
+    return (
+      <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
+        <p>{error || "Chave da API do Google Maps não configurada"}</p>
       </div>
     );
   }
