@@ -11,3 +11,9 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+:root {
+  --primary-color: #7c3aed;
+  --primary-light: #9d6ef4;
+  --primary-dark: #5b21b6;
+}
