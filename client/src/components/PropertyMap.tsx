@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { GoogleMap, Marker, useLoadScript } from "@react-google-maps/api";
 import type { Property } from "@shared/schema";
 
@@ -17,8 +17,10 @@ export function PropertyMap({
   center = defaultCenter,
   zoom = 12
 }: PropertyMapProps) {
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
+    googleMapsApiKey: apiKey || '',
     language: 'pt-BR'
   });
 
@@ -32,7 +34,17 @@ export function PropertyMap({
     setMap(null);
   }, []);
 
+  if (!apiKey) {
+    console.error("Google Maps API key não encontrada nas variáveis de ambiente");
+    return (
+      <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
+        <p>Chave da API do Google Maps não configurada</p>
+      </div>
+    );
+  }
+
   if (loadError) {
+    console.error("Erro ao carregar Google Maps:", loadError);
     return (
       <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
         <p>Erro ao carregar o Google Maps. Por favor, verifique a chave da API.</p>
@@ -44,14 +56,6 @@ export function PropertyMap({
     return (
       <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
         <p>Carregando mapa...</p>
-      </div>
-    );
-  }
-
-  if (!import.meta.env.VITE_GOOGLE_MAPS_API_KEY) {
-    return (
-      <div className="w-full h-full min-h-[400px] flex items-center justify-center bg-muted">
-        <p>Chave da API do Google Maps não configurada</p>
       </div>
     );
   }
