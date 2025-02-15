@@ -4,11 +4,17 @@ import { PropertyMap } from "@/components/PropertyMap";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Bed, Bath, Square, MapPin, Share2, Heart } from "lucide-react";
+import { Bed, Bath, Square, MapPin, Share2, Heart, HeartOff } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useFavorites } from "@/hooks/useFavorites";
+import { useShare } from "@/hooks/useShare";
 import type { Property } from "@shared/schema";
 
 export default function PropertyDetails() {
   const { id } = useParams();
+  const { toast } = useToast();
+  const { isFavorite, addFavorite, removeFavorite } = useFavorites();
+  const { shareProperty } = useShare();
 
   const { data: property, isLoading } = useQuery<Property>({
     queryKey: [`/api/properties/${id}`]
@@ -29,6 +35,32 @@ export default function PropertyDetails() {
       </div>
     );
   }
+
+  const handleFavoriteClick = () => {
+    const propertyId = Number(property.id);
+    if (isFavorite(propertyId)) {
+      removeFavorite(propertyId);
+      toast({
+        description: "Removido dos favoritos",
+      });
+    } else {
+      addFavorite(propertyId);
+      toast({
+        description: "Adicionado aos favoritos",
+      });
+    }
+  };
+
+  const handleShareClick = async () => {
+    const result = await shareProperty(property);
+    if (result) {
+      toast({
+        description: result,
+      });
+    }
+  };
+
+  const isFavorited = isFavorite(Number(property.id));
 
   return (
     <div className="min-h-screen bg-background">
@@ -117,11 +149,22 @@ export default function PropertyDetails() {
                 <div className="space-y-4">
                   <Button className="w-full">Contact Agent</Button>
                   <div className="grid grid-cols-2 gap-4">
-                    <Button variant="outline">
-                      <Heart className="w-4 h-4 mr-2" />
-                      Save
+                    <Button 
+                      variant="outline"
+                      onClick={handleFavoriteClick}
+                      className={isFavorited ? "bg-primary/10" : ""}
+                    >
+                      {isFavorited ? (
+                        <HeartOff className="w-4 h-4 mr-2 text-primary" />
+                      ) : (
+                        <Heart className="w-4 h-4 mr-2" />
+                      )}
+                      {isFavorited ? "Saved" : "Save"}
                     </Button>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={handleShareClick}
+                    >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share
                     </Button>
