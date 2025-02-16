@@ -43,8 +43,6 @@ adicione a credencial do google maps
 cd npm run dev
 ```
 
-# Autor
-
-Wagner Pereira Chequeleiro
-
-https://www.linkedin.com/in/wagnerpch/
+# Autores
+Aline Aparecida Pereira Chequeleiro - https://www.linkedin.com/in/alineapchequeleiro/
+Wagner Pereira Chequeleiro - https://www.linkedin.com/in/wagnerpch/
