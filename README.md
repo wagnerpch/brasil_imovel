@@ -6,7 +6,7 @@ Projeto teste do Replit.com
 
 # Sobre o projeto
 
-Aplicação desenvolvida 99,9% pelo Replit.com. O restante foi configuração de GOOGLE_MAPS_API_KEY no site do Google (), para colocar no arquivo local ".env-development" (não incluído no repositório por segurança).
+Aplicação desenvolvida 99,9% pelo Replit.com. O restante foi configuração de GOOGLE_MAPS_API_KEY no site do Google (https://console.cloud.google.com/), para colocar no arquivo local ".env-development" (não incluído no repositório por segurança).
 
 # Tecnologias utilizadas
 
