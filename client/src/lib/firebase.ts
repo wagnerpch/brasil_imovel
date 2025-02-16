@@ -9,6 +9,15 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+// Debug log to check if environment variables are loaded
+console.log("Checking Firebase environment variables:", {
+  hasApiKey: !!import.meta.env.VITE_FIREBASE_API_KEY,
+  hasProjectId: !!import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  hasAppId: !!import.meta.env.VITE_FIREBASE_APP_ID,
+  authDomain: firebaseConfig.authDomain,
+  projectId: firebaseConfig.projectId,
+});
+
 console.log("Firebase config (without sensitive data):", {
   authDomain: firebaseConfig.authDomain,
   projectId: firebaseConfig.projectId,
